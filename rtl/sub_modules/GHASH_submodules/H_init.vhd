@@ -46,6 +46,7 @@ COMPONENT counter is
 end COMPONENT;
 constant limit_s : NATURAL := 3;
 SIGNAL count_s : std_logic_vector(clog2(limit_s)-1 DOWNTO 0);
+SIGNAL valid_s : std_logic;
 
 
 SIGNAL H_reg : std_logic_vector(127 DOWNTO 0);
@@ -58,7 +59,7 @@ init_H_counter : counter
 		clk => clk,
 		rst => rst,
 		count => count_s,
-		valid => valid
+		valid => valid_s
 		);
 
 init_H_multH : multH_32way PORT MAP(
@@ -84,8 +85,15 @@ begin
             current_sum_input_s <= (OTHERS => '0');
         ELSE
             H_reg <= H_reg;
-            deformed_contribution_input_s <= deformed_contribution_output_s;
+            
             current_sum_input_s <= current_sum_output_s;
+			if valid_s = '1' then
+				deformed_contribution_input_s <= current_sum_output_s;
+				current_sum_input_s <= (OTHERS => '0');
+			else
+				deformed_contribution_input_s <= deformed_contribution_output_s;
+				current_sum_input_s <= current_sum_output_s;
+			end if;
         END IF;
     END IF;
 end process;
@@ -98,6 +106,7 @@ ELSE H_reg(63 DOWNTO 32) WHEN count_s = "01"
 ELSE H_reg(95 DOWNTO 64) WHEN count_s = "10"
 ELSE H_reg(127 DOWNTO 96) WHEN count_s = "11";
 
+valid <= valid_s;
 
 
 end behavior;
