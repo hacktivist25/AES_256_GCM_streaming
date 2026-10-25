@@ -34,7 +34,7 @@ async def H_init_test(dut):
         if i%4 == 3 :
             assert int(dut.valid.value) == 1, (
             f"ctrl_valid shoud be triggered "
-            f"at cycle {cycle}"
+            f"at cycle {i}"
             )
             power +=1
             current_power = model.multH_128(H, current_power)
@@ -47,7 +47,7 @@ async def H_init_test(dut):
         else : 
             assert int(dut.valid.value) == 0, (
             f"ctrl_valid shoud be down "
-            f"at cycle {cycle}"
+            f"at cycle {i}"
             )
     for name in dut:
         dut._log.info("child: %s", name._name)

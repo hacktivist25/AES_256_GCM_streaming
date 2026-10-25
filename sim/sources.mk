@@ -24,6 +24,8 @@ UTILS_PKG_SOURCES := \
 # ============================
 # GHASH COMPONENT
 # ============================
+GHASH_SOURCES := \
+    $(RTL_DIR)/sub_modules/GHASH_2x4way.vhd
 
 H_INIT_SOURCES := \
     $(RTL_DIR)/sub_modules/GHASH_submodules/H_init.vhd
@@ -36,3 +38,6 @@ COUNTER_SOURCES := \
 	
 XTIME_128_SOURCES := \
     $(RTL_DIR)/sub_modules/GHASH_submodules/xtime_128.vhd
+	
+H_POWER_BANK_SOURCES := \
+    $(RTL_DIR)/sub_modules/GHASH_submodules/H_power_bank.vhd
