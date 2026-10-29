@@ -1,10 +1,10 @@
 [*]
 [*] GTKWave Analyzer v3.3.127 (w)1999-2026 BSI
-[*] Wed Oct 28 16:00:06 2026
+[*] Thu Oct 29 09:12:39 2026
 [*]
 [dumpfile] "C:\Users\bryan\Documents\Scienss\Projets\AES\sim\tests\GHASH\tests\GHASH\waves.ghw"
 [savefile] "C:\Users\bryan\Documents\Scienss\Projets\AES\sim\tests\GHASH\config_2.gtkw"
-[timestart] 0
+[timestart] 700000000
 [size] 1920 959
 [pos] -27 -24
 *-27.750771 400000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -13,7 +13,7 @@
 [sst_width] 310
 [signals_width] 785
 [sst_expanded] 1
-[sst_vpaned_height] 279
+[sst_vpaned_height] 416
 @28
 top.ghash_2x4way.clk
 #{top.ghash_2x4way.counter[1:0]} top.ghash_2x4way.counter[1] top.ghash_2x4way.counter[0]
@@ -200,8 +200,10 @@ top.ghash_2x4way.multh_current_sum_s_a[7][0]
 top.ghash_2x4way.valid_a
 top.ghash_2x4way.valid_b
 top.ghash_2x4way.valid_tag
-@29
 top.ghash_2x4way.valid_ad
+top.ghash_2x4way.final_block
+@29
+#{top.ghash_2x4way.final_block_delay_reg[0:2]} top.ghash_2x4way.final_block_delay_reg[0] top.ghash_2x4way.final_block_delay_reg[1] top.ghash_2x4way.final_block_delay_reg[2]
 @28
 #{top.ghash_2x4way.counter_delay_reg[2][1:0]} top.ghash_2x4way.counter_delay_reg[2][1] top.ghash_2x4way.counter_delay_reg[2][0]
 @c00022
