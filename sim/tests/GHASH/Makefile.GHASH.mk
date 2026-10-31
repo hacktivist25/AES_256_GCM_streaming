@@ -28,7 +28,7 @@ MODULE = GHASH_coco
 COMPILE_ARGS += --std=08
 
 # visualise the waveform
-SIM_ARGS += --wave=waves.ghw
+#SIM_ARGS += --wave=waves.ghw
 
 include $(shell cocotb-config --makefiles)/Makefile.sim
 

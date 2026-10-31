@@ -1,13 +1,13 @@
 [*]
 [*] GTKWave Analyzer v3.3.127 (w)1999-2026 BSI
-[*] Thu Oct 29 09:12:39 2026
+[*] Sat Oct 31 21:57:40 2026
 [*]
 [dumpfile] "C:\Users\bryan\Documents\Scienss\Projets\AES\sim\tests\GHASH\tests\GHASH\waves.ghw"
 [savefile] "C:\Users\bryan\Documents\Scienss\Projets\AES\sim\tests\GHASH\config_2.gtkw"
-[timestart] 700000000
+[timestart] 18814200000
 [size] 1920 959
 [pos] -27 -24
-*-27.750771 400000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-26.171432 19003100000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.ghash_2x4way.
 [sst_width] 310
@@ -197,14 +197,20 @@ top.ghash_2x4way.multh_current_sum_s_a[7][0]
 #{top.ghash_2x4way.hpow_col_a[2][31:0]} top.ghash_2x4way.hpow_col_a[2][31] top.ghash_2x4way.hpow_col_a[2][30] top.ghash_2x4way.hpow_col_a[2][29] top.ghash_2x4way.hpow_col_a[2][28] top.ghash_2x4way.hpow_col_a[2][27] top.ghash_2x4way.hpow_col_a[2][26] top.ghash_2x4way.hpow_col_a[2][25] top.ghash_2x4way.hpow_col_a[2][24] top.ghash_2x4way.hpow_col_a[2][23] top.ghash_2x4way.hpow_col_a[2][22] top.ghash_2x4way.hpow_col_a[2][21] top.ghash_2x4way.hpow_col_a[2][20] top.ghash_2x4way.hpow_col_a[2][19] top.ghash_2x4way.hpow_col_a[2][18] top.ghash_2x4way.hpow_col_a[2][17] top.ghash_2x4way.hpow_col_a[2][16] top.ghash_2x4way.hpow_col_a[2][15] top.ghash_2x4way.hpow_col_a[2][14] top.ghash_2x4way.hpow_col_a[2][13] top.ghash_2x4way.hpow_col_a[2][12] top.ghash_2x4way.hpow_col_a[2][11] top.ghash_2x4way.hpow_col_a[2][10] top.ghash_2x4way.hpow_col_a[2][9] top.ghash_2x4way.hpow_col_a[2][8] top.ghash_2x4way.hpow_col_a[2][7] top.ghash_2x4way.hpow_col_a[2][6] top.ghash_2x4way.hpow_col_a[2][5] top.ghash_2x4way.hpow_col_a[2][4] top.ghash_2x4way.hpow_col_a[2][3] top.ghash_2x4way.hpow_col_a[2][2] top.ghash_2x4way.hpow_col_a[2][1] top.ghash_2x4way.hpow_col_a[2][0]
 #{top.ghash_2x4way.hpow_col_a[3][31:0]} top.ghash_2x4way.hpow_col_a[3][31] top.ghash_2x4way.hpow_col_a[3][30] top.ghash_2x4way.hpow_col_a[3][29] top.ghash_2x4way.hpow_col_a[3][28] top.ghash_2x4way.hpow_col_a[3][27] top.ghash_2x4way.hpow_col_a[3][26] top.ghash_2x4way.hpow_col_a[3][25] top.ghash_2x4way.hpow_col_a[3][24] top.ghash_2x4way.hpow_col_a[3][23] top.ghash_2x4way.hpow_col_a[3][22] top.ghash_2x4way.hpow_col_a[3][21] top.ghash_2x4way.hpow_col_a[3][20] top.ghash_2x4way.hpow_col_a[3][19] top.ghash_2x4way.hpow_col_a[3][18] top.ghash_2x4way.hpow_col_a[3][17] top.ghash_2x4way.hpow_col_a[3][16] top.ghash_2x4way.hpow_col_a[3][15] top.ghash_2x4way.hpow_col_a[3][14] top.ghash_2x4way.hpow_col_a[3][13] top.ghash_2x4way.hpow_col_a[3][12] top.ghash_2x4way.hpow_col_a[3][11] top.ghash_2x4way.hpow_col_a[3][10] top.ghash_2x4way.hpow_col_a[3][9] top.ghash_2x4way.hpow_col_a[3][8] top.ghash_2x4way.hpow_col_a[3][7] top.ghash_2x4way.hpow_col_a[3][6] top.ghash_2x4way.hpow_col_a[3][5] top.ghash_2x4way.hpow_col_a[3][4] top.ghash_2x4way.hpow_col_a[3][3] top.ghash_2x4way.hpow_col_a[3][2] top.ghash_2x4way.hpow_col_a[3][1] top.ghash_2x4way.hpow_col_a[3][0]
 @28
+top.ghash_2x4way.swap
+@29
+top.ghash_2x4way.swap_reg
+@28
 top.ghash_2x4way.valid_a
 top.ghash_2x4way.valid_b
+top.ghash_2x4way.valid_a_s
+top.ghash_2x4way.valid_b_s
+top.ghash_2x4way.valid_a_reg
+top.ghash_2x4way.valid_b_reg
 top.ghash_2x4way.valid_tag
 top.ghash_2x4way.valid_ad
 top.ghash_2x4way.final_block
-@29
 #{top.ghash_2x4way.final_block_delay_reg[0:2]} top.ghash_2x4way.final_block_delay_reg[0] top.ghash_2x4way.final_block_delay_reg[1] top.ghash_2x4way.final_block_delay_reg[2]
-@28
 #{top.ghash_2x4way.counter_delay_reg[2][1:0]} top.ghash_2x4way.counter_delay_reg[2][1] top.ghash_2x4way.counter_delay_reg[2][0]
 @c00022
 #{top.ghash_2x4way.tag_reg[127:0]} top.ghash_2x4way.tag_reg[127] top.ghash_2x4way.tag_reg[126] top.ghash_2x4way.tag_reg[125] top.ghash_2x4way.tag_reg[124] top.ghash_2x4way.tag_reg[123] top.ghash_2x4way.tag_reg[122] top.ghash_2x4way.tag_reg[121] top.ghash_2x4way.tag_reg[120] top.ghash_2x4way.tag_reg[119] top.ghash_2x4way.tag_reg[118] top.ghash_2x4way.tag_reg[117] top.ghash_2x4way.tag_reg[116] top.ghash_2x4way.tag_reg[115] top.ghash_2x4way.tag_reg[114] top.ghash_2x4way.tag_reg[113] top.ghash_2x4way.tag_reg[112] top.ghash_2x4way.tag_reg[111] top.ghash_2x4way.tag_reg[110] top.ghash_2x4way.tag_reg[109] top.ghash_2x4way.tag_reg[108] top.ghash_2x4way.tag_reg[107] top.ghash_2x4way.tag_reg[106] top.ghash_2x4way.tag_reg[105] top.ghash_2x4way.tag_reg[104] top.ghash_2x4way.tag_reg[103] top.ghash_2x4way.tag_reg[102] top.ghash_2x4way.tag_reg[101] top.ghash_2x4way.tag_reg[100] top.ghash_2x4way.tag_reg[99] top.ghash_2x4way.tag_reg[98] top.ghash_2x4way.tag_reg[97] top.ghash_2x4way.tag_reg[96] top.ghash_2x4way.tag_reg[95] top.ghash_2x4way.tag_reg[94] top.ghash_2x4way.tag_reg[93] top.ghash_2x4way.tag_reg[92] top.ghash_2x4way.tag_reg[91] top.ghash_2x4way.tag_reg[90] top.ghash_2x4way.tag_reg[89] top.ghash_2x4way.tag_reg[88] top.ghash_2x4way.tag_reg[87] top.ghash_2x4way.tag_reg[86] top.ghash_2x4way.tag_reg[85] top.ghash_2x4way.tag_reg[84] top.ghash_2x4way.tag_reg[83] top.ghash_2x4way.tag_reg[82] top.ghash_2x4way.tag_reg[81] top.ghash_2x4way.tag_reg[80] top.ghash_2x4way.tag_reg[79] top.ghash_2x4way.tag_reg[78] top.ghash_2x4way.tag_reg[77] top.ghash_2x4way.tag_reg[76] top.ghash_2x4way.tag_reg[75] top.ghash_2x4way.tag_reg[74] top.ghash_2x4way.tag_reg[73] top.ghash_2x4way.tag_reg[72] top.ghash_2x4way.tag_reg[71] top.ghash_2x4way.tag_reg[70] top.ghash_2x4way.tag_reg[69] top.ghash_2x4way.tag_reg[68] top.ghash_2x4way.tag_reg[67] top.ghash_2x4way.tag_reg[66] top.ghash_2x4way.tag_reg[65] top.ghash_2x4way.tag_reg[64] top.ghash_2x4way.tag_reg[63] top.ghash_2x4way.tag_reg[62] top.ghash_2x4way.tag_reg[61] top.ghash_2x4way.tag_reg[60] top.ghash_2x4way.tag_reg[59] top.ghash_2x4way.tag_reg[58] top.ghash_2x4way.tag_reg[57] top.ghash_2x4way.tag_reg[56] top.ghash_2x4way.tag_reg[55] top.ghash_2x4way.tag_reg[54] top.ghash_2x4way.tag_reg[53] top.ghash_2x4way.tag_reg[52] top.ghash_2x4way.tag_reg[51] top.ghash_2x4way.tag_reg[50] top.ghash_2x4way.tag_reg[49] top.ghash_2x4way.tag_reg[48] top.ghash_2x4way.tag_reg[47] top.ghash_2x4way.tag_reg[46] top.ghash_2x4way.tag_reg[45] top.ghash_2x4way.tag_reg[44] top.ghash_2x4way.tag_reg[43] top.ghash_2x4way.tag_reg[42] top.ghash_2x4way.tag_reg[41] top.ghash_2x4way.tag_reg[40] top.ghash_2x4way.tag_reg[39] top.ghash_2x4way.tag_reg[38] top.ghash_2x4way.tag_reg[37] top.ghash_2x4way.tag_reg[36] top.ghash_2x4way.tag_reg[35] top.ghash_2x4way.tag_reg[34] top.ghash_2x4way.tag_reg[33] top.ghash_2x4way.tag_reg[32] top.ghash_2x4way.tag_reg[31] top.ghash_2x4way.tag_reg[30] top.ghash_2x4way.tag_reg[29] top.ghash_2x4way.tag_reg[28] top.ghash_2x4way.tag_reg[27] top.ghash_2x4way.tag_reg[26] top.ghash_2x4way.tag_reg[25] top.ghash_2x4way.tag_reg[24] top.ghash_2x4way.tag_reg[23] top.ghash_2x4way.tag_reg[22] top.ghash_2x4way.tag_reg[21] top.ghash_2x4way.tag_reg[20] top.ghash_2x4way.tag_reg[19] top.ghash_2x4way.tag_reg[18] top.ghash_2x4way.tag_reg[17] top.ghash_2x4way.tag_reg[16] top.ghash_2x4way.tag_reg[15] top.ghash_2x4way.tag_reg[14] top.ghash_2x4way.tag_reg[13] top.ghash_2x4way.tag_reg[12] top.ghash_2x4way.tag_reg[11] top.ghash_2x4way.tag_reg[10] top.ghash_2x4way.tag_reg[9] top.ghash_2x4way.tag_reg[8] top.ghash_2x4way.tag_reg[7] top.ghash_2x4way.tag_reg[6] top.ghash_2x4way.tag_reg[5] top.ghash_2x4way.tag_reg[4] top.ghash_2x4way.tag_reg[3] top.ghash_2x4way.tag_reg[2] top.ghash_2x4way.tag_reg[1] top.ghash_2x4way.tag_reg[0]
