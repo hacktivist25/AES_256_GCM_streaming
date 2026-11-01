@@ -2,35 +2,24 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-Library UNISIM;
-use UNISIM.vcomponents.all;
-
-Library UNIMACRO;
-use UNIMACRO.vcomponents.all;
-
 entity SubBytes_8BRAM is
-    generic (
-        CONSTANT max_count : NATURAL := 8
-    );
 	port (
 		state : IN std_logic_vector(127 DOWNTO 0);
 		clk : IN std_logic;
 		rst : IN std_logic;
-		output_state : OUT std_logic_vector(127 DOWNTO 0);
-		sub_bytes_over : OUT std_logic
+		output_state : OUT std_logic_vector(127 DOWNTO 0)
 	);
 end SubBytes_8BRAM;
 
 architecture behavior of SubBytes_8BRAM is
   
-COMPONENT BRAM_18_true_dual_port is
+COMPONENT BRAM_18_true_dual_port_no_inference is
 	port (
-		ADDRA : IN std_logic_vector(10 DOWNTO 0);
-		ADDRB : IN std_logic_vector(10 DOWNTO 0);
-		clk : IN std_logic;
-		rst : IN std_logic;
-		DOA : OUT std_logic_vector(7 DOWNTO 0);
-		DOB : OUT std_logic_vector(7 DOWNTO 0)
+		ADDRA : in  std_logic_vector(10 downto 0);
+        ADDRB : in  std_logic_vector(10 downto 0);
+        clk   : in  std_logic;
+        DOA   : out std_logic_vector(7 downto 0);
+        DOB   : out std_logic_vector(7 downto 0)
 	);
 end COMPONENT;
  
@@ -47,15 +36,14 @@ begin
 -- instanciate BRAMs
 gen_sbox_bram : for i in 0 to 7 generate
 begin
-    BRAM_TDP_MACRO_inst : BRAM_18_true_dual_port
+    BRAM_TDP_MACRO_inst : BRAM_18_true_dual_port_no_inference
     port map (
-        DOA => DOA(i),
-        DOB => DOB(i),
         ADDRA => ADDRA(i),
         ADDRB => ADDRB(i),
         clk => clk,
-        rst => rst
-    );
+        DOA => DOA(i),
+        DOB => DOB(i)
+);
 end generate;
 
 process (clk, rst)
@@ -63,9 +51,7 @@ process (clk, rst)
 	begin
 	if rst = '0' then
 		shift_reg_output <= (OTHERS => '0');
-		sub_bytes_over <= '0';
 	elsif rising_edge(clk) then
-	   sub_bytes_over <= '0';
 	   -- LSB to MSB
        ADDRA(0)(7 DOWNTO 0) <= state( 15 DOWNTO 8 );
        ADDRB(0)(7 DOWNTO 0) <= state( 7 DOWNTO 0 );
