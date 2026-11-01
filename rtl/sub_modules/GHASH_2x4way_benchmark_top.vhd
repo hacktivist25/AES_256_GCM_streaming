@@ -30,9 +30,13 @@ COMPONENT GHASH_2x4way is
 		start : IN std_logic;
 		load_A : IN std_logic;
 		load_B : IN std_logic;
+		valid_A : IN std_logic;
+		valid_B : IN std_logic;
 		swap : IN std_logic;
+		final_block : IN std_logic;
 		counter : IN std_logic_vector(1 DOWNTO 0);
-		new_AD : OUT std_logic_vector(127 DOWNTO 0)
+		new_AD : OUT std_logic_vector(127 DOWNTO 0);
+		valid_AD : OUT std_logic
 	);
 end COMPONENT;
 
@@ -53,7 +57,10 @@ begin
         start => start,
         load_A => load_A,
         load_B => load_B,
-        swap => swap,
+        valid_A => '1',
+        valid_B => '1',
+        swap => swap,     
+        final_block => '0',
         counter => counter,
         new_AD => new_AD
     );
