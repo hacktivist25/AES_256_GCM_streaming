@@ -1,53 +1,58 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-entity multH_8way is
-	port(
-		deformed_contribution_input : IN std_logic_vector(127 DOWNTO 0);
-		current_sum_input : IN std_logic_vector(127 DOWNTO 0);
-		H_i : IN std_logic_vector(7 DOWNTO 0);
-		deformed_contribution_output : OUT std_logic_vector(127 DOWNTO 0);
-		current_sum_output : OUT std_logic_vector(127 DOWNTO 0)
-	);
-end multH_8way;
+entity multh_8way is
+  port (
+    deformed_contribution_input  : in    std_logic_vector(127 downto 0);
+    current_sum_input            : in    std_logic_vector(127 downto 0);
+    h_i                          : in    std_logic_vector(7 downto 0);
+    deformed_contribution_output : out   std_logic_vector(127 downto 0);
+    current_sum_output           : out   std_logic_vector(127 downto 0)
+  );
+end entity multh_8way;
 
-architecture behavior of multH_8way is
+architecture behavior of multh_8way is
 
-COMPONENT xtime_128 IS
-  PORT (
-    IN_1 	: IN  STD_LOGIC_VECTOR(127 DOWNTO 0);
-    OUT_1	: OUT STD_LOGIC_VECTOR(127 DOWNTO 0)
+  component xtime_128 is
+    port (
+      in_1  : in    std_logic_vector(127 downto 0);
+      out_1 : out   std_logic_vector(127 downto 0)
     );
-END COMPONENT;
+  end component xtime_128;
 
-type deformed_contribution_t is array (0 to 8) of std_logic_vector(127 downto 0);
-SIGNAL deformed_contribution : deformed_contribution_t;
+  type deformed_contribution_t is array (0 to 8) of std_logic_vector(127 downto 0);
 
-type current_sum_t is array (0 to 7) of std_logic_vector(127 downto 0);
-SIGNAL current_sum : current_sum_t;
+  signal deformed_contribution : deformed_contribution_t;
+
+  type current_sum_t is array (0 to 7) of std_logic_vector(127 downto 0);
+
+  signal current_sum : current_sum_t;
 
 begin
-deformed_contribution(0) <= deformed_contribution_input;
 
-deformed_contribution_output <= deformed_contribution(8);
-current_sum_output <= current_sum(7);
+  deformed_contribution(0) <= deformed_contribution_input;
 
-current_sum(0) <= deformed_contribution(0) XOR current_sum_input WHEN H_i(0) = '1' 
-ELSE current_sum_input;
+  deformed_contribution_output <= deformed_contribution(8);
+  current_sum_output           <= current_sum(7);
 
-gen_current_cum : for i in 1 to 7 generate
-	current_sum(i) <= deformed_contribution(i) XOR current_sum(i-1) WHEN H_i(i) = '1' 
-ELSE current_sum(i-1);
-end generate;
+  current_sum(0) <= deformed_contribution(0) xor current_sum_input when h_i(0) = '1' else
+                    current_sum_input;
 
+  gen_current_cum : for i in 1 to 7 generate
+    current_sum(i) <= deformed_contribution(i) xor current_sum(i - 1) when h_i(i) = '1' else
+                      current_sum(i - 1);
+  end generate gen_current_cum;
 
-gen_xtimers : for i in 0 to 7 generate
-begin
-    XTIMERS : xtime_128 PORT MAP(
-        IN_1 => deformed_contribution(i),
-        OUT_1 => deformed_contribution(i+1)
-    ); 
-end generate;
+  gen_xtimers : for i in 0 to 7 generate
+  begin
 
-end behavior;
+    xtimers : component xtime_128
+      port map (
+        in_1  => deformed_contribution(i),
+        out_1 => deformed_contribution(i + 1)
+      );
+
+  end generate gen_xtimers;
+
+end architecture behavior;

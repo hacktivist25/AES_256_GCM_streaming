@@ -1,58 +1,62 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-entity AES_engine_benchmark_top is
-	port(
-		clk : IN std_logic;
-		rst : IN std_logic;
-		void : OUT std_logic_vector(127 DOWNTO 0)
-	);
-end AES_engine_benchmark_top;
+entity aes_engine_benchmark_top is
+  port (
+    clk  : in    std_logic;
+    rst  : in    std_logic;
+    void : out   std_logic_vector(127 downto 0)
+  );
+end entity aes_engine_benchmark_top;
 
-architecture behavior of AES_engine_benchmark_top is
+architecture behavior of aes_engine_benchmark_top is
 
-COMPONENT AES_engine is
-	port(
-		valid_in : IN std_logic; 
-		plaintext : IN std_logic_vector(127 DOWNTO 0);
-		key_scheduled : IN std_logic_vector(1919 DOWNTO 0);
-		clk : IN STD_LOGIC;
-		rst : IN STD_LOGIC;
-		ciphertext : OUT std_logic_vector(127 DOWNTO 0);
-		valid_out : OUT std_logic
-	);
-end COMPONENT;
+  component aes_engine is
+    port (
+      valid_in      : in    std_logic;
+      plaintext     : in    std_logic_vector(127 downto 0);
+      key_scheduled : in    std_logic_vector(1919 downto 0);
+      clk           : in    std_logic;
+      rst           : in    std_logic;
+      ciphertext    : out   std_logic_vector(127 downto 0);
+      valid_out     : out   std_logic
+    );
+  end component aes_engine;
 
-
-SIGNAL key_scheduled_s : STD_LOGIC_VECTOR(1919 DOWNTO 0) := X"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-SIGNAL plaintext_s : STD_LOGIC_VECTOR(127 DOWNTO 0) := X"0123456789ABCDEF0123456789ABCDEF";
-SIGNAL ciphertext_s : STD_LOGIC_VECTOR(127 DOWNTO 0);
-SIGNAL valid_out_s : STD_LOGIC;
+  signal key_scheduled_s : std_logic_vector(1919 downto 0) := x"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+  signal plaintext_s     : std_logic_vector(127 downto 0)  := x"0123456789ABCDEF0123456789ABCDEF";
+  signal ciphertext_s    : std_logic_vector(127 downto 0);
+  signal valid_out_s     : std_logic;
 
 begin
-    AES : AES_engine PORT MAP(
-        valid_in => '1',
-		plaintext => plaintext_s,
-		key_scheduled => key_scheduled_s,
-		clk => clk,
-		rst => rst,
-		ciphertext => ciphertext_s,
-		valid_out => valid_out_s
+
+  aes : component aes_engine
+    port map (
+      valid_in      => '1',
+      plaintext     => plaintext_s,
+      key_scheduled => key_scheduled_s,
+      clk           => clk,
+      rst           => rst,
+      ciphertext    => ciphertext_s,
+      valid_out     => valid_out_s
     );
-    
-    process (clk, rst)
-    begin
-        if rst = '0' THEN
-            key_scheduled_s <= X"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-            plaintext_s <= X"0123456789ABCDEF0123456789ABCDEF";
-        elsif rising_edge(clk) then
-            plaintext_s(126 DOWNTO 0) <= plaintext_s(127 DOWNTO 1);
-            key_scheduled_s(1918 DOWNTO 0) <= key_scheduled_s(1919 DOWNTO 1);
-            plaintext_s(127) <= plaintext_s(0);
-            key_scheduled_s(1919) <= key_scheduled_s(0);
-        end if;
-    end process;
-    
-    void <= ciphertext_s;
-end behavior;
+
+  process (clk, rst) is
+  begin
+
+    if (rst = '0') then
+      key_scheduled_s <= x"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+      plaintext_s     <= x"0123456789ABCDEF0123456789ABCDEF";
+    elsif rising_edge(clk) then
+      plaintext_s(126 DOWNTO 0)      <= plaintext_s(127 downto 1);
+      key_scheduled_s(1918 DOWNTO 0) <= key_scheduled_s(1919 downto 1);
+      plaintext_s(127)               <= plaintext_s(0);
+      key_scheduled_s(1919)          <= key_scheduled_s(0);
+    end if;
+
+  end process;
+
+  void <= ciphertext_s;
+
+end architecture behavior;

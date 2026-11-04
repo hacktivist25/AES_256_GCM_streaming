@@ -1,39 +1,40 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
-USE ieee.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
+  use work.utils_pkg.all;
 
-use work.utils_pkg.all;
- 
-
-ENTITY H_power_bank IS
-  GENERIC (
-    N : NATURAL := 3
+entity h_power_bank is
+  generic (
+    n : natural := 3
   );
-  PORT (
-    H_4_in 	: IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
-    load 	: IN  STD_LOGIC;
-    clk 	: IN  STD_LOGIC;
-    counter : IN  STD_LOGIC_VECTOR(clog2(N) - 1 DOWNTO 0);
-    output	: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
-    );
-END H_power_bank;
- 
-ARCHITECTURE behavior OF H_power_bank IS  
+  port (
+    h_4_in  : in    std_logic_vector(31 downto 0);
+    load    : in    std_logic;
+    clk     : in    std_logic;
+    counter : in    std_logic_vector(clog2(n) - 1 downto 0);
+    output  : out   std_logic_vector(31 downto 0)
+  );
+end entity h_power_bank;
 
-TYPE H4_t is array (0 to N) OF std_logic_vector(31 DOWNTO 0);
-SIGNAL H4_power : H4_t;
+architecture behavior of h_power_bank is
 
+  type h4_t is array (0 to N) of std_logic_vector(31 downto 0);
 
-BEGIN      
-  process(clk)
+  signal h4_power : h4_t;
+
+begin
+
+  process (clk) is
   begin
-    IF rising_edge(clk) then
-        IF load = '1' THEN
-            H4_power(to_integer(unsigned(counter))) <= H_4_in;
-        END IF;
-    END IF;
+
+    if rising_edge(clk) then
+      if (load = '1') then
+        h4_power(to_integer(unsigned(counter))) <= h_4_in;
+      end if;
+    end if;
+
   end process;
-  
-output <= H4_power(to_integer(unsigned(counter)));
-  
-end behavior;
+
+  output <= h4_power(to_integer(unsigned(counter)));
+
+end architecture behavior;

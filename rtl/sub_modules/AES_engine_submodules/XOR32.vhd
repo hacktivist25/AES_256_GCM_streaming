@@ -1,17 +1,19 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
-USE ieee.numeric_std.all;
- 
-ENTITY XOR32 IS
-  PORT (
-    A 	: IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
-    B 	: IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
-    A_XOR_B	: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
-    );
-END XOR32;
- 
-ARCHITECTURE behavior OF XOR32 IS  
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-BEGIN  
-  A_XOR_B <= A XOR B;
-end behavior;
+entity xor32 is
+  port (
+    a       : in    std_logic_vector(31 downto 0);
+    b       : in    std_logic_vector(31 downto 0);
+    a_xor_b : out   std_logic_vector(31 downto 0)
+  );
+end entity xor32;
+
+architecture behavior of xor32 is
+
+begin
+
+  a_xor_b <= a xor b;
+
+end architecture behavior;

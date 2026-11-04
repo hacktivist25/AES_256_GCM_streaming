@@ -1,26 +1,29 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
-USE ieee.numeric_std.all;
- 
- -- multiplication by two in GF(2)
- -- consists of a right shift followed eventually by a XORING with 0001 1011
- -- defined in 4.7 of the NIST.FIPS.197 "announcing Advanced encryption standard"
-ENTITY xtime_128 IS
-  PORT (
-    IN_1 	: IN  STD_LOGIC_VECTOR(127 DOWNTO 0);
-    OUT_1	: OUT STD_LOGIC_VECTOR(127 DOWNTO 0)
-    );
-END xtime_128;
- 
-ARCHITECTURE behavior OF xtime_128 IS  
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-SIGNAL polynom_LSB : STD_LOGIC_VECTOR (7 DOWNTO 0):=x"87";
-	
-SIGNAL IN_times_2 : STD_LOGIC_VECTOR(128 DOWNTO 0);
+-- multiplication by two in GF(2)
+-- consists of a right shift followed eventually by a XORING with 0001 1011
+-- defined in 4.7 of the NIST.FIPS.197 "announcing Advanced encryption standard"
 
-BEGIN  
-  IN_times_2 <= IN_1 & '0'; -- "equivalent of a logical left shift"
+entity xtime_128 is
+  port (
+    in_1  : in    std_logic_vector(127 downto 0);
+    out_1 : out   std_logic_vector(127 downto 0)
+  );
+end entity xtime_128;
 
-  OUT_1 <= IN_times_2(127 DOWNTO 8) &  ( IN_times_2(7 DOWNTO 0) XOR polynom_LSB) WHEN IN_times_2(128) = '1'
-           ELSE IN_times_2(127 DOWNTO 0);
-end behavior;
+architecture behavior of xtime_128 is
+
+  signal polynom_lsb : std_logic_vector(7 downto 0) := x"87";
+
+  signal in_times_2 : std_logic_vector(128 downto 0);
+
+begin
+
+  in_times_2 <= in_1 & '0'; -- "equivalent of a logical left shift"
+
+  out_1 <= in_times_2(127 downto 8) & (in_times_2(7 downto 0) xor polynom_lsb) when in_times_2(128) = '1' else
+           in_times_2(127 downto 0);
+
+end architecture behavior;

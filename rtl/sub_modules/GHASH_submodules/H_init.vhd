@@ -1,112 +1,115 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
+  use work.utils_pkg.all;
 
-use work.utils_pkg.all;
+entity h_init is
+  port (
+    h     : in    std_logic_vector(127 downto 0); -- H for the first one
+    start : in    std_logic;
+    clk   : in    std_logic;
+    rst   : in    std_logic;
+    valid : out   std_logic;
+    h_out : out   std_logic_vector(127 downto 0)
+  );
+end entity h_init;
 
-entity H_init is
-	port(
-		H : IN std_logic_vector(127 DOWNTO 0); -- H for the first one
-		start : IN std_logic;
-		clk : IN std_logic;
-		rst: IN std_logic;
-		valid: OUT std_logic;
-		H_out: OUT std_logic_vector(127 DOWNTO 0)
-	);
-end H_init;
+architecture behavior of h_init is
 
-architecture behavior of H_init is
-
-COMPONENT multH_32way is
-	port(
-		deformed_contribution_input : IN std_logic_vector(127 DOWNTO 0);
-		current_sum_input : IN std_logic_vector(127 DOWNTO 0);
-		H_i : IN std_logic_vector(31 DOWNTO 0);
-		deformed_contribution_output : OUT std_logic_vector(127 DOWNTO 0);
-		current_sum_output : OUT std_logic_vector(127 DOWNTO 0)
-	);
-end COMPONENT;
-SIGNAL deformed_contribution_input_s : std_logic_vector(127 DOWNTO 0);
-SIGNAL current_sum_input_s : std_logic_vector(127 DOWNTO 0);
-SIGNAL H_i_s : std_logic_vector(31 DOWNTO 0);
-SIGNAL deformed_contribution_output_s : std_logic_vector(127 DOWNTO 0);
-SIGNAL current_sum_output_s : std_logic_vector(127 DOWNTO 0);
-
-COMPONENT counter is
-    generic (
-        LIMIT : NATURAL := 32 -- 0 to 32
+  component multh_32way is
+    port (
+      deformed_contribution_input  : in    std_logic_vector(127 downto 0);
+      current_sum_input            : in    std_logic_vector(127 downto 0);
+      h_i                          : in    std_logic_vector(31 downto 0);
+      deformed_contribution_output : out   std_logic_vector(127 downto 0);
+      current_sum_output           : out   std_logic_vector(127 downto 0)
     );
-	port(
-		start : IN std_logic;
-		clk : IN std_logic;
-		rst : IN std_logic;
-		count : OUT std_logic_vector(clog2(LIMIT)-1 DOWNTO 0);
-		valid : OUT std_logic
-	);
-end COMPONENT;
-constant limit_s : NATURAL := 3;
-SIGNAL count_s : std_logic_vector(clog2(limit_s)-1 DOWNTO 0);
-SIGNAL valid_s : std_logic;
+  end component multh_32way;
 
+  signal deformed_contribution_input_s  : std_logic_vector(127 downto 0);
+  signal current_sum_input_s            : std_logic_vector(127 downto 0);
+  signal h_i_s                          : std_logic_vector(31 downto 0);
+  signal deformed_contribution_output_s : std_logic_vector(127 downto 0);
+  signal current_sum_output_s           : std_logic_vector(127 downto 0);
 
-SIGNAL H_reg : std_logic_vector(127 DOWNTO 0);
+  component counter is
+    generic (
+      limit : natural := 32
+    );
+    port (
+      start : in    std_logic;
+      clk   : in    std_logic;
+      rst   : in    std_logic;
+      count : out   std_logic_vector(clog2(LIMIT) - 1 downto 0);
+      valid : out   std_logic
+    );
+  end component counter;
+
+  constant limit_s : natural := 3;
+  signal   count_s : std_logic_vector(clog2(limit_s) - 1 downto 0);
+  signal   valid_s : std_logic;
+
+  signal h_reg : std_logic_vector(127 downto 0);
 
 begin
-init_H_counter : counter 
-    GENERIC MAP (LIMIT => limit_s)
-    PORT MAP(
-        start => start,
-		clk => clk,
-		rst => rst,
-		count => count_s,
-		valid => valid_s
-		);
 
-init_H_multH : multH_32way PORT MAP(
-        deformed_contribution_input => deformed_contribution_input_s, 
-        current_sum_input => current_sum_input_s,
-        H_i => H_i_s,
-        deformed_contribution_output => deformed_contribution_output_s,
-        current_sum_output => current_sum_output_s
-		);
+  init_h_counter : component counter
+    generic map (
+      limit => limit_s
+    )
+    port map (
+      start => start,
+      clk   => clk,
+      rst   => rst,
+      count => count_s,
+      valid => valid_s
+    );
 
+  init_h_multh : component multh_32way
+    port map (
+      deformed_contribution_input  => deformed_contribution_input_s,
+      current_sum_input            => current_sum_input_s,
+      h_i                          => h_i_s,
+      deformed_contribution_output => deformed_contribution_output_s,
+      current_sum_output           => current_sum_output_s
+    );
 
+  process (clk, rst) is
+  begin
 
-process (clk, rst)
-begin
-    IF rst = '0' then
-        deformed_contribution_input_s <= (OTHERS => '0');
-        current_sum_input_s <= (OTHERS => '0');
-        H_reg <= (OTHERS => '0');
-    ELSIF rising_edge(clk) then
-        IF start = '1' then
-            H_reg <= H;
-            deformed_contribution_input_s <= H;
-            current_sum_input_s <= (OTHERS => '0');
-        ELSE
-            H_reg <= H_reg;
-            
-            current_sum_input_s <= current_sum_output_s;
-			if valid_s = '1' then
-				deformed_contribution_input_s <= current_sum_output_s;
-				current_sum_input_s <= (OTHERS => '0');
-			else
-				deformed_contribution_input_s <= deformed_contribution_output_s;
-				current_sum_input_s <= current_sum_output_s;
-			end if;
-        END IF;
-    END IF;
-end process;
+    if (rst = '0') then
+      deformed_contribution_input_s <= (others => '0');
+      current_sum_input_s           <= (others => '0');
+      h_reg                         <= (others => '0');
+    elsif rising_edge(clk) then
+      if (start = '1') then
+        h_reg                         <= h;
+        deformed_contribution_input_s <= h;
+        current_sum_input_s           <= (others => '0');
+      else
+        h_reg <= h_reg;
 
---output of the mulH block calculating H_power_i
-H_out <= current_sum_output_s;
+        current_sum_input_s <= current_sum_output_s;
+        if (valid_s = '1') then
+          deformed_contribution_input_s <= current_sum_output_s;
+          current_sum_input_s           <= (others => '0');
+        else
+          deformed_contribution_input_s <= deformed_contribution_output_s;
+          current_sum_input_s           <= current_sum_output_s;
+        end if;
+      end if;
+    end if;
 
-H_i_s <= H_reg(31 DOWNTO 0) WHEN count_s = "00"
-ELSE H_reg(63 DOWNTO 32) WHEN count_s = "01"
-ELSE H_reg(95 DOWNTO 64) WHEN count_s = "10"
-ELSE H_reg(127 DOWNTO 96) WHEN count_s = "11";
+  end process;
 
-valid <= valid_s;
+  -- output of the mulH block calculating H_power_i
+  h_out <= current_sum_output_s;
 
+  h_i_s <= h_reg(31 downto 0) when count_s = "00" else
+           h_reg(63 downto 32) when count_s = "01" else
+           h_reg(95 downto 64) when count_s = "10" else
+           h_reg(127 downto 96) when count_s = "11";
 
-end behavior;
+  valid <= valid_s;
+
+end architecture behavior;

@@ -1,34 +1,39 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
-USE ieee.numeric_std.all;
- 
-ENTITY shift_reg_128b_right2 IS
-  PORT (
-    input 	: IN  STD_LOGIC_VECTOR(127 DOWNTO 0);
-    load 	: IN  STD_LOGIC;
-    clk 	: IN  STD_LOGIC;
-    rst 	: IN  STD_LOGIC;
-    output	: OUT STD_LOGIC_VECTOR(1 DOWNTO 0)
-    );
-END shift_reg_128b_right2;
- 
-ARCHITECTURE behavior OF shift_reg_128b_right2 IS  
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-SIGNAL shift_register : STD_LOGIC_VECTOR(127 DOWNTO 0);
+entity shift_reg_128b_right2 is
+  port (
+    input  : in    std_logic_vector(127 downto 0);
+    load   : in    std_logic;
+    clk    : in    std_logic;
+    rst    : in    std_logic;
+    output : out   std_logic_vector(1 downto 0)
+  );
+end entity shift_reg_128b_right2;
 
-BEGIN  
-  output <= shift_register(1 DOWNTO 0) WHEN rst = '1' ELSE "00";  
-    
-  process(clk, rst)
+architecture behavior of shift_reg_128b_right2 is
+
+  signal shift_register : std_logic_vector(127 downto 0);
+
+begin
+
+  output <= shift_register(1 downto 0) when rst = '1' else
+            "00";
+
+  process (clk, rst) is
   begin
-    IF rst = '0' then
-        shift_register <= (OTHERS => '0');
-    ELSIF rising_edge(clk) then
-        IF load = '1' THEN
-            shift_register <= input;
-        ELSE
-            shift_register(125 DOWNTO 0) <= shift_register(127 DOWNTO 2);
-        END IF;
-    END IF;
+
+    if (rst = '0') then
+      shift_register <= (others => '0');
+    elsif rising_edge(clk) then
+      if (load = '1') then
+        shift_register <= input;
+      else
+        shift_register(125 DOWNTO 0) <= shift_register(127 downto 2);
+      end if;
+    end if;
+
   end process;
-end behavior;
+
+end architecture behavior;

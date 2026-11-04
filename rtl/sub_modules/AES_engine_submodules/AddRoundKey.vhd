@@ -1,17 +1,19 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-entity AddRoundKey is
-	port(
-		round_key : IN std_logic_vector(127 DOWNTO 0);
-		state : IN std_logic_vector(127 DOWNTO 0);
-		output_state : OUT std_logic_vector(127 DOWNTO 0)
-	);
-end AddRoundKey;
+entity addroundkey is
+  port (
+    round_key    : in    std_logic_vector(127 downto 0);
+    state        : in    std_logic_vector(127 downto 0);
+    output_state : out   std_logic_vector(127 downto 0)
+  );
+end entity addroundkey;
 
-architecture behavior of AddRoundKey is
+architecture behavior of addroundkey is
 
-begin 
-    output_state <= round_key XOR state;
-end behavior;
+begin
+
+  output_state <= round_key xor state;
+
+end architecture behavior;

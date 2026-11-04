@@ -1,89 +1,93 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
+  use work.utils_pkg.all;
 
-use work.utils_pkg.all;
+entity ghash_2x4way_benchmark_top is
+  port (
+    clk     : in    std_logic;
+    rst     : in    std_logic;
+    start   : in    std_logic;
+    load_a  : in    std_logic;
+    load_b  : in    std_logic;
+    swap    : in    std_logic;
+    counter : in    std_logic_vector(1 downto 0);
+    void    : out   std_logic_vector(127 downto 0)
+  );
+end entity ghash_2x4way_benchmark_top;
 
-entity GHASH_2x4way_benchmark_top is
-	port(
-		clk : IN std_logic;
-		rst : IN std_logic;
-		start : IN std_logic;
-		load_A : IN std_logic;
-		load_B : IN std_logic;
-		swap : IN std_logic;
-		counter : IN std_logic_vector(1 DOWNTO 0);
-		void : OUT std_logic_vector(127 DOWNTO 0)
-	);
-end GHASH_2x4way_benchmark_top;
+architecture behavior of ghash_2x4way_benchmark_top is
 
-architecture behavior of GHASH_2x4way_benchmark_top is
+  component ghash_2x4way is
+    port (
+      ci_a        : in    std_logic_vector(127 downto 0);
+      ci_b        : in    std_logic_vector(127 downto 0);
+      h           : in    std_logic_vector(127 downto 0);
+      prev_ad     : in    std_logic_vector(127 downto 0);
+      clk         : in    std_logic;
+      rst         : in    std_logic;
+      start       : in    std_logic;
+      load_a      : in    std_logic;
+      load_b      : in    std_logic;
+      valid_a     : in    std_logic;
+      valid_b     : in    std_logic;
+      swap        : in    std_logic;
+      final_block : in    std_logic;
+      counter     : in    std_logic_vector(1 downto 0);
+      new_ad      : out   std_logic_vector(127 downto 0);
+      valid_ad    : out   std_logic
+    );
+  end component ghash_2x4way;
 
-COMPONENT GHASH_2x4way is
-	port(
-		CI_A : IN std_logic_vector(127 DOWNTO 0);
-		CI_B : IN std_logic_vector(127 DOWNTO 0);
-		H : IN std_logic_vector(127 DOWNTO 0);
-		prev_AD : IN std_logic_vector(127 DOWNTO 0);
-		clk : IN std_logic;
-		rst : IN std_logic;
-		start : IN std_logic;
-		load_A : IN std_logic;
-		load_B : IN std_logic;
-		valid_A : IN std_logic;
-		valid_B : IN std_logic;
-		swap : IN std_logic;
-		final_block : IN std_logic;
-		counter : IN std_logic_vector(1 DOWNTO 0);
-		new_AD : OUT std_logic_vector(127 DOWNTO 0);
-		valid_AD : OUT std_logic
-	);
-end COMPONENT;
-
-SIGNAL CI_A : STD_LOGIC_VECTOR(127 DOWNTO 0) := X"0123456789ABCDEF0123456789ABCDEF";
-SIGNAL CI_B : STD_LOGIC_VECTOR(127 DOWNTO 0) := X"0123456789ABCDEF0123456789ABCDEF";
-SIGNAL H : STD_LOGIC_VECTOR(127 DOWNTO 0) := X"0123456789ABCDEF0123456789ABCDEF";
-SIGNAL prev_AD : STD_LOGIC_VECTOR(127 DOWNTO 0) := X"0123456789ABCDEF0123456789ABCDEF";
-SIGNAL new_AD : STD_LOGIC_VECTOR(127 DOWNTO 0);
+  signal ci_a    : std_logic_vector(127 downto 0) := x"0123456789ABCDEF0123456789ABCDEF";
+  signal ci_b    : std_logic_vector(127 downto 0) := x"0123456789ABCDEF0123456789ABCDEF";
+  signal h       : std_logic_vector(127 downto 0) := x"0123456789ABCDEF0123456789ABCDEF";
+  signal prev_ad : std_logic_vector(127 downto 0) := x"0123456789ABCDEF0123456789ABCDEF";
+  signal new_ad  : std_logic_vector(127 downto 0);
 
 begin
-    GHASH : GHASH_2x4way PORT MAP(
-        CI_A => CI_A,
-        CI_B => CI_B,
-        H => H,
-        prev_AD => prev_AD,
-        clk => clk,
-        rst => rst,
-        start => start,
-        load_A => load_A,
-        load_B => load_B,
-        valid_A => '1',
-        valid_B => '1',
-        swap => swap,     
-        final_block => '0',
-        counter => counter,
-        new_AD => new_AD
+
+  ghash : component ghash_2x4way
+    port map (
+      ci_a        => ci_a,
+      ci_b        => ci_b,
+      h           => h,
+      prev_ad     => prev_ad,
+      clk         => clk,
+      rst         => rst,
+      start       => start,
+      load_a      => load_a,
+      load_b      => load_b,
+      valid_a     => '1',
+      valid_b     => '1',
+      swap        => swap,
+      final_block => '0',
+      counter     => counter,
+      new_ad      => new_ad
     );
-    
-    process (clk, rst)
-    begin
-        if rst = '0' THEN
-            CI_A <= X"0123456789ABCDEF0123456789ABCDEF";
-            CI_B <= X"0123456789ABCDEF0123456789ABCDEF";
-            H <= X"0123456789ABCDEF0123456789ABCDEF";
-            prev_AD <= X"0123456789ABCDEF0123456789ABCDEF";
-        elsif rising_edge(clk) then
-            CI_A(126 DOWNTO 0) <= CI_A(127 DOWNTO 1);
-            CI_B(126 DOWNTO 0) <= CI_B(127 DOWNTO 1);
-            H(126 DOWNTO 0) <= H(127 DOWNTO 1);
-            prev_AD(126 DOWNTO 0) <= prev_AD(127 DOWNTO 1);
-                        
-            CI_A(127) <= CI_A(0);
-            CI_B(127) <= CI_B(0);
-            H(127) <= H(0);
-            prev_AD(127) <= prev_AD(0);
-        end if;
-    end process;
-    
-    void <= new_AD;
-end behavior;
+
+  process (clk, rst) is
+  begin
+
+    if (rst = '0') then
+      ci_a    <= x"0123456789ABCDEF0123456789ABCDEF";
+      ci_b    <= x"0123456789ABCDEF0123456789ABCDEF";
+      h       <= x"0123456789ABCDEF0123456789ABCDEF";
+      prev_ad <= x"0123456789ABCDEF0123456789ABCDEF";
+    elsif rising_edge(clk) then
+      ci_a(126 DOWNTO 0)    <= ci_a(127 downto 1);
+      ci_b(126 DOWNTO 0)    <= ci_b(127 downto 1);
+      h(126 DOWNTO 0)       <= h(127 downto 1);
+      prev_ad(126 DOWNTO 0) <= prev_ad(127 downto 1);
+
+      ci_a(127)    <= ci_a(0);
+      ci_b(127)    <= ci_b(0);
+      h(127)       <= h(0);
+      prev_ad(127) <= prev_ad(0);
+    end if;
+
+  end process;
+
+  void <= new_ad;
+
+end architecture behavior;

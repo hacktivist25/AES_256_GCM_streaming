@@ -1,66 +1,70 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-entity multH_32way_benchmark_top is
-	port(
-		clk : IN std_logic;
-		rst : IN std_logic;
-		void : OUT std_logic
-	);
-end multH_32way_benchmark_top;
+entity multh_32way_benchmark_top is
+  port (
+    clk  : in    std_logic;
+    rst  : in    std_logic;
+    void : out   std_logic
+  );
+end entity multh_32way_benchmark_top;
 
-architecture behavior of multH_32way_benchmark_top is
+architecture behavior of multh_32way_benchmark_top is
 
-COMPONENT multH_32way is
-	port(
-		deformed_contribution_input : IN std_logic_vector(127 DOWNTO 0);
-		current_sum_input : IN std_logic_vector(127 DOWNTO 0);
-		H_i : IN std_logic_vector(31 DOWNTO 0);
-		deformed_contribution_output : OUT std_logic_vector(127 DOWNTO 0);
-		current_sum_output : OUT std_logic_vector(127 DOWNTO 0)
-	);
-end COMPONENT;
+  component multh_32way is
+    port (
+      deformed_contribution_input  : in    std_logic_vector(127 downto 0);
+      current_sum_input            : in    std_logic_vector(127 downto 0);
+      h_i                          : in    std_logic_vector(31 downto 0);
+      deformed_contribution_output : out   std_logic_vector(127 downto 0);
+      current_sum_output           : out   std_logic_vector(127 downto 0)
+    );
+  end component multh_32way;
 
-SIGNAL deformed_contribution_input_bench : std_logic_vector(127 DOWNTO 0) := X"11223344112233441122334411223344";   
-SIGNAL current_sum_input_bench : std_logic_vector(127 DOWNTO 0) := X"11223344112233441122334411223344";               
+  signal deformed_contribution_input_bench : std_logic_vector(127 downto 0) := x"11223344112233441122334411223344";
+  signal current_sum_input_bench           : std_logic_vector(127 downto 0) := x"11223344112233441122334411223344";
 
+  signal deformed_contribution_input_reg   : std_logic_vector(127 downto 0);
+  signal current_sum_input_reg             : std_logic_vector(127 downto 0);
+  signal h_i_bench                         : std_logic_vector(31 downto 0) := x"55555555";
+  signal deformed_contribution_output_next : std_logic_vector(127 downto 0);
+  signal current_sum_output_next           : std_logic_vector(127 downto 0);
 
-SIGNAL deformed_contribution_input_reg : std_logic_vector(127 DOWNTO 0);   
-SIGNAL current_sum_input_reg : std_logic_vector(127 DOWNTO 0);             
-SIGNAL H_i_bench : std_logic_vector(31 DOWNTO 0) := X"55555555";         
-SIGNAL deformed_contribution_output_next : std_logic_vector(127 DOWNTO 0); 
-SIGNAL current_sum_output_next : std_logic_vector(127 DOWNTO 0);         
+  attribute keep : string;
+  attribute dont_touch : string;
 
-attribute KEEP : string;
-attribute DONT_TOUCH : string;
+  attribute keep of deformed_contribution_input_reg : signal is "TRUE";
+  attribute keep of current_sum_input_reg           : signal is "TRUE";
 
-attribute KEEP of deformed_contribution_input_reg : signal is "TRUE";
-attribute KEEP of current_sum_input_reg : signal is "TRUE";
-
-attribute DONT_TOUCH of benchmark : label is "TRUE";
-
+  attribute dont_touch of benchmark : label is "TRUE";
 
 begin
-    benchmark : multH_32way PORT MAP (
-            deformed_contribution_input => deformed_contribution_input_reg, 
-            current_sum_input => current_sum_input_reg,          
-            H_i => H_i_bench,                        
-            deformed_contribution_output => deformed_contribution_output_next, 
-			current_sum_output => current_sum_output_next
-			);       
-    
-    process (clk, rst)
-    begin
-        IF rst = '0' THEN  
-            deformed_contribution_input_reg  <= deformed_contribution_input_bench;
-            current_sum_input_reg <= current_sum_input_bench; 
-        ELSIF rising_edge(clk) THEN
-            deformed_contribution_input_reg(127 DOWNTO 1)  <= deformed_contribution_output_next(126 DOWNTO 0);
-            deformed_contribution_input_reg(0)  <= deformed_contribution_output_next(127);
-            current_sum_input_reg(127 DOWNTO 1) <= current_sum_output_next(126 DOWNTO 0);
-            current_sum_input_reg(0) <= current_sum_output_next(127);
-        END IF;
-    end process;
-    void <= current_sum_output_next(3) XOR deformed_contribution_output_next(89);
-end behavior;
+
+  benchmark : component multh_32way
+    port map (
+      deformed_contribution_input  => deformed_contribution_input_reg,
+      current_sum_input            => current_sum_input_reg,
+      h_i                          => h_i_bench,
+      deformed_contribution_output => deformed_contribution_output_next,
+      current_sum_output           => current_sum_output_next
+    );
+
+  process (clk, rst) is
+  begin
+
+    if (rst = '0') then
+      deformed_contribution_input_reg <= deformed_contribution_input_bench;
+      current_sum_input_reg           <= current_sum_input_bench;
+    elsif rising_edge(clk) then
+      deformed_contribution_input_reg(127 DOWNTO 1) <= deformed_contribution_output_next(126 downto 0);
+      deformed_contribution_input_reg(0)            <= deformed_contribution_output_next(127);
+      current_sum_input_reg(127 DOWNTO 1)           <= current_sum_output_next(126 downto 0);
+      current_sum_input_reg(0)                      <= current_sum_output_next(127);
+    end if;
+
+  end process;
+
+  void <= current_sum_output_next(3) xor deformed_contribution_output_next(89);
+
+end architecture behavior;
