@@ -8,7 +8,12 @@ library unisim;
 library unimacro;
   use unimacro.vcomponents.all;
 
--- contains T-tables
+-- ============================================================================
+-- BRAM 36Kb containing "T tables" (used to perform shiftMixSub operation
+-- uses a file t_tables.mem to load values
+
+-- do not use UNISIM library
+-- ============================================================================
 
 entity bram_36_true_dual_port_no_inference is
   port (

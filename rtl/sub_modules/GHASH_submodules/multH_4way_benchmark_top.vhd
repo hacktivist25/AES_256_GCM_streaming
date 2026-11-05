@@ -2,6 +2,18 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- benchmark for implementation
+
+-- testing the multH4
+-- 4 steps of a 128 bits multiplication in GF(2 power 128)
+-- multiplication of h_i with v_state_in
+
+-- requires 32 of this block (in serial) to perform a full 128 bits multiplication
+
+-- old signals name, but replacing thoses isn't necessary, see multH32
+-- ============================================================================
+
 entity multh_4way_benchmark_top is
   port (
     clk  : in    std_logic;

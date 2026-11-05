@@ -2,6 +2,10 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- XOR 32bits
+-- ============================================================================
+
 entity xor32 is
   port (
     a       : in    std_logic_vector(31 downto 0);

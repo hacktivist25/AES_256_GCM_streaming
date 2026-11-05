@@ -2,7 +2,10 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
--- state column is presented as (MSB) A0, A1, A2, A3 (LSB)
+-- ============================================================================
+-- takes one 32-bits "column" of an AES state, and returns a byte-wise rotation
+-- of this column
+-- ============================================================================
 
 entity rotword is
   port (

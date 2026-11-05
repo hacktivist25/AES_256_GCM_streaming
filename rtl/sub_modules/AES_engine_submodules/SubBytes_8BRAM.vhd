@@ -2,6 +2,14 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- uses 8 BRAMS (each with 2 8bits output)
+-- takes the state in input (128 bits) and returns sbox(state)
+
+-- Latency : 1 cycle
+-- Initiation Interval = 1 cycle
+-- ============================================================================
+
 entity subbytes_8bram is
   port (
     state        : in    std_logic_vector(127 downto 0);

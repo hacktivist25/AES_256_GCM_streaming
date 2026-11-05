@@ -2,6 +2,13 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- Fully pipelined AES engine, performing the 14 rounds of AES 256
+--
+-- Initiation Interval = 1 cycle
+-- Latency : 14 cycles
+-- ============================================================================
+
 entity aes_engine is
   port (
     valid_in      : in    std_logic;

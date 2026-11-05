@@ -2,9 +2,12 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
--- multiplication by two in GF(2)
--- consists of a right shift followed eventually by a XORING with 0001 1011
+-- ============================================================================
+-- multiplication by two in GF(2 power 8) of an 8-bit input
+--
+-- consists of a left shift followed eventually by a XORING with 0001 1011 (0x1B)
 -- defined in 4.7 of the NIST.FIPS.197 "announcing Advanced encryption standard"
+-- ============================================================================
 
 entity xtime is
   port (

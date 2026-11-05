@@ -3,6 +3,20 @@ library ieee;
   use ieee.numeric_std.all;
   use work.utils_pkg.all;
 
+-- ============================================================================
+-- Testbench for the GHASH engine
+--
+-- GHASH engine calculates intermediate authentification tags, taking output from 2 AES engines
+-- ci_a (ciphertext from AES engine A) and ci_b
+-- they have a valid_a or valid_b tag when the output from AES is valid
+--
+-- uses a start signal to initialize the powers of H (H power 1 to H power 8) which takes 28 cycles (see h_init)
+--
+-- Initiation Interval = 1 cycle
+-- Latency : 4 cycles
+-- Produces an output every 4 vlaid pairs of AES ciphetexts
+-- ============================================================================
+
 entity ghash_2x4way_benchmark_top is
   port (
     clk     : in    std_logic;

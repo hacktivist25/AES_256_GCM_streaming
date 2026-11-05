@@ -2,6 +2,15 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- Testbench for the AES engine
+--
+-- Fully pipelined AES engine, performing the 14 rounds of AES 256
+--
+-- Initiation Interval = 1 cycle
+-- Latency : 14 cycles
+-- ============================================================================
+
 entity aes_engine_benchmark_top is
   port (
     clk  : in    std_logic;

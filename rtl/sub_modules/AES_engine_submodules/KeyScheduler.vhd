@@ -2,7 +2,12 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
--- scheduler takes 13 clock cycles to produce fully expanded key
+-- ============================================================================
+-- takes a 256-bits key, and use it to create the 13 other "round_keys" (128 bits each)
+
+-- produces one round_key each cycle
+-- Latency : 13 clocks
+-- ============================================================================
 
 entity keyscheduler is
   port (

@@ -2,7 +2,14 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
--- state column is presented as (MSB) A0, A1, A2, A3 (LSB)
+-- ============================================================================
+-- uses 8 BRAMS (each with 2 8bits output)
+-- takes the state in input (128 bits) and returns shift_rows(mixcolumns(sbox(state)))
+-- in one operation
+
+-- Latency : 1 cycle
+-- Initiation Interval = 1 cycle
+-- ============================================================================
 
 entity shiftmixsub_8bram is
   port (

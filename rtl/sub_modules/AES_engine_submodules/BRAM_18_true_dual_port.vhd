@@ -8,6 +8,11 @@ library unisim;
 library unimacro;
   use unimacro.vcomponents.all;
 
+-- ============================================================================
+-- BRAM 18Kb containing sbox table (used to perform subbyte operation)
+-- uses a file sbox.mem to load values
+-- ============================================================================
+
 entity bram_18_true_dual_port is
   port (
     addra : in    std_logic_vector(10 downto 0);

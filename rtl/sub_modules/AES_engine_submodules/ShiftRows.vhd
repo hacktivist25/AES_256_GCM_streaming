@@ -2,6 +2,10 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- shift the "rows" of an 128-bits input state
+-- ============================================================================
+
 entity shiftrows is
   port (
     state        : in    std_logic_vector(127 downto 0);

@@ -3,6 +3,18 @@ library ieee;
   use ieee.numeric_std.all;
   use work.utils_pkg.all;
 
+-- ============================================================================
+-- GHASH engine calculates intermediate authentification tags, taking output from 2 AES engines
+-- ci_a (ciphertext from AES engine A) and ci_b
+-- they have a valid_a or valid_b tag when the output from AES is valid
+--
+-- uses a start signal to initialize the powers of H (H power 1 to H power 8) which takes 28 cycles (see h_init)
+--
+-- Initiation Interval = 1 cycle
+-- Latency : 4 cycles
+-- Produces an output every 4 valid pairs of AES ciphetexts
+-- ============================================================================
+
 entity ghash_2x4way is
   port (
     ci_a        : in    std_logic_vector(127 downto 0);
@@ -26,15 +38,15 @@ end entity ghash_2x4way;
 
 architecture behavior of ghash_2x4way is
 
-  signal stock_a_reg,             stock_b_reg : std_logic_vector(127 downto 0);
-  signal valid_a_reg,             valid_b_reg : std_logic;
+  signal stock_a_reg,         stock_b_reg : std_logic_vector(127 downto 0);
+  signal valid_a_reg,         valid_b_reg : std_logic;
 
-  signal valid_a_s,               valid_b_s : std_logic;
+  signal valid_a_s,           valid_b_s : std_logic;
 
   type delayers_registers_t is array (0 to 2) of std_logic;
 
-  signal valid_a_delay_reg,       valid_b_delay_reg : delayers_registers_t;
-  signal valid_tag                                  : std_logic;
+  signal valid_a_delay_reg,   valid_b_delay_reg : delayers_registers_t;
+  signal valid_tag                              : std_logic;
 
   signal final_block_delay_reg : delayers_registers_t;
 
@@ -57,25 +69,25 @@ architecture behavior of ghash_2x4way is
 
   component multh_32way is
     port (
-      deformed_contribution_input  : in    std_logic_vector(127 downto 0);
-      current_sum_input            : in    std_logic_vector(127 downto 0);
-      h_i                          : in    std_logic_vector(31 downto 0);
-      deformed_contribution_output : out   std_logic_vector(127 downto 0);
-      current_sum_output           : out   std_logic_vector(127 downto 0)
+      v_state_in  : in    std_logic_vector(127 downto 0);
+      z_acc_in    : in    std_logic_vector(127 downto 0);
+      h_i         : in    std_logic_vector(31 downto 0);
+      v_state_out : out   std_logic_vector(127 downto 0);
+      z_acc_out   : out   std_logic_vector(127 downto 0)
     );
   end component multh_32way;
 
   type multh_reg_t is array (0 to 2) of std_logic_vector(127 downto 0);
 
-  signal multh_contrib_reg_a,     multh_contrib_reg_b     : multh_reg_t;
-  signal multh_current_sum_reg_a, multh_current_sum_reg_b : multh_reg_t;
+  signal multh_v_state_reg_a, multh_v_state_reg_b : multh_reg_t;
+  signal multh_z_acc_reg_a,   multh_z_acc_reg_b   : multh_reg_t;
 
   type multh_s_t is array (0 to 7) of std_logic_vector(127 downto 0);
 
-  signal multh_contrib_s_a,       multh_contrib_s_b     : multh_s_t;
-  signal multh_current_sum_s_a,   multh_current_sum_s_b : multh_s_t;
+  signal multh_v_state_s_a,   multh_v_state_s_b : multh_s_t;
+  signal multh_z_acc_s_a,     multh_z_acc_s_b   : multh_s_t;
 
-  signal multh_initial_sum : std_logic_vector(127 downto 0) := x"00000000000000000000000000000000";
+  signal multh_initial_z_acc : std_logic_vector(127 downto 0) := x"00000000000000000000000000000000";
 
   component h_power_bank is
     generic (
@@ -95,7 +107,7 @@ architecture behavior of ghash_2x4way is
 
   type hpow_col_t is array (0 to 3) of std_logic_vector(31 downto 0);
 
-  signal hpow_col_a,              hpow_col_b : hpow_col_t;
+  signal hpow_col_a,          hpow_col_b : hpow_col_t;
 
   signal tag_reg : std_logic_vector(127 downto 0);
 
@@ -125,31 +137,31 @@ begin
   counter_s(3) <= counter_delay_reg(2) when (load_a = '0' and load_b = '0') else
                   counter;
 
-  multh_contrib_s_a(0) <= multh_initial_sum when valid_a_s = '0' else
+  multh_v_state_s_a(0) <= multh_initial_z_acc when valid_a_s = '0' else
                           stock_a_reg when (counter = "11" or final_block = '1') and swap_reg = '1' else
                           stock_a_reg xor prev_ad when (counter = "11" or final_block = '1') and swap_reg = '0' else
                           ci_a;
-  multh_contrib_s_a(2) <= multh_contrib_reg_a(0);
-  multh_contrib_s_a(4) <= multh_contrib_reg_a(1);
-  multh_contrib_s_a(6) <= multh_contrib_reg_a(2);
+  multh_v_state_s_a(2) <= multh_v_state_reg_a(0);
+  multh_v_state_s_a(4) <= multh_v_state_reg_a(1);
+  multh_v_state_s_a(6) <= multh_v_state_reg_a(2);
 
-  multh_contrib_s_b(0) <= multh_initial_sum when valid_b_s = '0' else
+  multh_v_state_s_b(0) <= multh_initial_z_acc when valid_b_s = '0' else
                           stock_b_reg when (counter = "11" or final_block = '1') and swap_reg = '0' else
                           stock_b_reg xor prev_ad when (counter = "11" or final_block = '1') and swap_reg = '1' else
                           ci_b;
-  multh_contrib_s_b(2) <= multh_contrib_reg_b(0);
-  multh_contrib_s_b(4) <= multh_contrib_reg_b(1);
-  multh_contrib_s_b(6) <= multh_contrib_reg_b(2);
+  multh_v_state_s_b(2) <= multh_v_state_reg_b(0);
+  multh_v_state_s_b(4) <= multh_v_state_reg_b(1);
+  multh_v_state_s_b(6) <= multh_v_state_reg_b(2);
 
-  multh_current_sum_s_a(0) <= multh_initial_sum;
-  multh_current_sum_s_a(2) <= multh_current_sum_reg_a(0);
-  multh_current_sum_s_a(4) <= multh_current_sum_reg_a(1);
-  multh_current_sum_s_a(6) <= multh_current_sum_reg_a(2);
+  multh_z_acc_s_a(0) <= multh_initial_z_acc;
+  multh_z_acc_s_a(2) <= multh_z_acc_reg_a(0);
+  multh_z_acc_s_a(4) <= multh_z_acc_reg_a(1);
+  multh_z_acc_s_a(6) <= multh_z_acc_reg_a(2);
 
-  multh_current_sum_s_b(0) <= multh_initial_sum;
-  multh_current_sum_s_b(2) <= multh_current_sum_reg_b(0);
-  multh_current_sum_s_b(4) <= multh_current_sum_reg_b(1);
-  multh_current_sum_s_b(6) <= multh_current_sum_reg_b(2);
+  multh_z_acc_s_b(0) <= multh_initial_z_acc;
+  multh_z_acc_s_b(2) <= multh_z_acc_reg_b(0);
+  multh_z_acc_s_b(4) <= multh_z_acc_reg_b(1);
+  multh_z_acc_s_b(6) <= multh_z_acc_reg_b(2);
 
   h_inititialiser : component h_init
     port map (
@@ -169,20 +181,20 @@ begin
 
     multh_a : component multh_32way
       port map (
-        deformed_contribution_input  => multh_contrib_s_a(2 * i),
-        current_sum_input            => multh_current_sum_s_a(2 * i),
-        h_i                          => hpow_col_a(i),
-        deformed_contribution_output => multh_contrib_s_a(2 * i + 1),
-        current_sum_output           => multh_current_sum_s_a(2 * i + 1)
+        v_state_in  => multh_v_state_s_a(2 * i),
+        z_acc_in    => multh_z_acc_s_a(2 * i),
+        h_i         => hpow_col_a(i),
+        v_state_out => multh_v_state_s_a(2 * i + 1),
+        z_acc_out   => multh_z_acc_s_a(2 * i + 1)
       );
 
     multh_b : component multh_32way
       port map (
-        deformed_contribution_input  => multh_contrib_s_b(2 * i),
-        current_sum_input            => multh_current_sum_s_b(2 * i),
-        h_i                          => hpow_col_b(i),
-        deformed_contribution_output => multh_contrib_s_b(2 * i + 1),
-        current_sum_output           => multh_current_sum_s_b(2 * i + 1)
+        v_state_in  => multh_v_state_s_b(2 * i),
+        z_acc_in    => multh_z_acc_s_b(2 * i),
+        h_i         => hpow_col_b(i),
+        v_state_out => multh_v_state_s_b(2 * i + 1),
+        z_acc_out   => multh_z_acc_s_b(2 * i + 1)
       );
 
     powh_a : component h_power_bank
@@ -220,14 +232,14 @@ begin
 
       for i in 0 to 2 loop
 
-        multh_contrib_reg_a(i)     <= (others => '0');
-        multh_contrib_reg_b(i)     <= (others => '0');
-        multh_current_sum_reg_a(i) <= (others => '0');
-        multh_current_sum_reg_b(i) <= (others => '0');
-        valid_a_delay_reg(i)       <= '0';
-        valid_b_delay_reg(i)       <= '0';
-        final_block_delay_reg(i)   <= '0';
-        counter_delay_reg(i)       <= (others => '0');
+        multh_v_state_reg_a(i)   <= (others => '0');
+        multh_v_state_reg_b(i)   <= (others => '0');
+        multh_z_acc_reg_a(i)     <= (others => '0');
+        multh_z_acc_reg_b(i)     <= (others => '0');
+        valid_a_delay_reg(i)     <= '0';
+        valid_b_delay_reg(i)     <= '0';
+        final_block_delay_reg(i) <= '0';
+        counter_delay_reg(i)     <= (others => '0');
 
       end loop;
 
@@ -268,10 +280,10 @@ begin
 
       for i in 0 to 2 loop
 
-        multh_contrib_reg_a(i)     <= multh_contrib_s_a(2 * i + 1);
-        multh_contrib_reg_b(i)     <= multh_contrib_s_b(2 * i + 1);
-        multh_current_sum_reg_a(i) <= multh_current_sum_s_a(2 * i + 1);
-        multh_current_sum_reg_b(i) <= multh_current_sum_s_b(2 * i + 1);
+        multh_v_state_reg_a(i) <= multh_v_state_s_a(2 * i + 1);
+        multh_v_state_reg_b(i) <= multh_v_state_s_b(2 * i + 1);
+        multh_z_acc_reg_a(i)   <= multh_z_acc_s_a(2 * i + 1);
+        multh_z_acc_reg_b(i)   <= multh_z_acc_s_b(2 * i + 1);
 
       end loop;
 
@@ -279,7 +291,7 @@ begin
         if (counter_delay_reg(2) = "11" or final_block_delay_reg(2) = '1') then
           tag_reg <= (others => '0');
         else
-          tag_reg <= multh_current_sum_s_a(7) xor multh_current_sum_s_b(7) xor tag_reg;
+          tag_reg <= multh_z_acc_s_a(7) xor multh_z_acc_s_b(7) xor tag_reg;
         end if;
       else
         tag_reg <= tag_reg;
@@ -288,7 +300,7 @@ begin
 
   end process;
 
-  new_ad   <= multh_current_sum_s_a(7) xor multh_current_sum_s_b(7) xor tag_reg;
+  new_ad   <= multh_z_acc_s_a(7) xor multh_z_acc_s_b(7) xor tag_reg;
   valid_ad <= '1' when (counter_delay_reg(2) = "11" and valid_tag = '1') or final_block_delay_reg(2) = '1' else
               '0';
 

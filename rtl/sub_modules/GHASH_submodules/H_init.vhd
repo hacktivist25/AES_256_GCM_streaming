@@ -3,6 +3,13 @@ library ieee;
   use ieee.numeric_std.all;
   use work.utils_pkg.all;
 
+-- ============================================================================
+-- receives H (AES(0)) and calculates the 7 others powers of H (up to H power 8)
+-- needed to perform G_HASH algorithm (used to calculate authentification tag)
+
+-- Latency : 28 cycles : 4 cycles per powers of H (Hpower 2 to H power 8)
+-- ============================================================================
+
 entity h_init is
   port (
     h     : in    std_logic_vector(127 downto 0); -- H for the first one
@@ -18,19 +25,19 @@ architecture behavior of h_init is
 
   component multh_32way is
     port (
-      deformed_contribution_input  : in    std_logic_vector(127 downto 0);
-      current_sum_input            : in    std_logic_vector(127 downto 0);
-      h_i                          : in    std_logic_vector(31 downto 0);
-      deformed_contribution_output : out   std_logic_vector(127 downto 0);
-      current_sum_output           : out   std_logic_vector(127 downto 0)
+      v_state_in  : in    std_logic_vector(127 downto 0);
+      z_acc_in    : in    std_logic_vector(127 downto 0);
+      h_i         : in    std_logic_vector(31 downto 0);
+      v_state_out : out   std_logic_vector(127 downto 0);
+      z_acc_out   : out   std_logic_vector(127 downto 0)
     );
   end component multh_32way;
 
-  signal deformed_contribution_input_s  : std_logic_vector(127 downto 0);
-  signal current_sum_input_s            : std_logic_vector(127 downto 0);
-  signal h_i_s                          : std_logic_vector(31 downto 0);
-  signal deformed_contribution_output_s : std_logic_vector(127 downto 0);
-  signal current_sum_output_s           : std_logic_vector(127 downto 0);
+  signal v_state_in_s  : std_logic_vector(127 downto 0);
+  signal z_acc_in_s    : std_logic_vector(127 downto 0);
+  signal h_i_s         : std_logic_vector(31 downto 0);
+  signal v_state_out_s : std_logic_vector(127 downto 0);
+  signal z_acc_out_s   : std_logic_vector(127 downto 0);
 
   component counter is
     generic (
@@ -67,35 +74,35 @@ begin
 
   init_h_multh : component multh_32way
     port map (
-      deformed_contribution_input  => deformed_contribution_input_s,
-      current_sum_input            => current_sum_input_s,
-      h_i                          => h_i_s,
-      deformed_contribution_output => deformed_contribution_output_s,
-      current_sum_output           => current_sum_output_s
+      v_state_in  => v_state_in_s,
+      z_acc_in    => z_acc_in_s,
+      h_i         => h_i_s,
+      v_state_out => v_state_out_s,
+      z_acc_out   => z_acc_out_s
     );
 
   process (clk, rst) is
   begin
 
     if (rst = '0') then
-      deformed_contribution_input_s <= (others => '0');
-      current_sum_input_s           <= (others => '0');
-      h_reg                         <= (others => '0');
+      v_state_in_s <= (others => '0');
+      z_acc_in_s   <= (others => '0');
+      h_reg        <= (others => '0');
     elsif rising_edge(clk) then
       if (start = '1') then
-        h_reg                         <= h;
-        deformed_contribution_input_s <= h;
-        current_sum_input_s           <= (others => '0');
+        h_reg        <= h;
+        v_state_in_s <= h;
+        z_acc_in_s   <= (others => '0');
       else
         h_reg <= h_reg;
 
-        current_sum_input_s <= current_sum_output_s;
+        z_acc_in_s <= z_acc_out_s;
         if (valid_s = '1') then
-          deformed_contribution_input_s <= current_sum_output_s;
-          current_sum_input_s           <= (others => '0');
+          v_state_in_s <= z_acc_out_s;
+          z_acc_in_s   <= (others => '0');
         else
-          deformed_contribution_input_s <= deformed_contribution_output_s;
-          current_sum_input_s           <= current_sum_output_s;
+          v_state_in_s <= v_state_out_s;
+          z_acc_in_s   <= z_acc_out_s;
         end if;
       end if;
     end if;
@@ -103,7 +110,7 @@ begin
   end process;
 
   -- output of the mulH block calculating H_power_i
-  h_out <= current_sum_output_s;
+  h_out <= z_acc_out_s;
 
   h_i_s <= h_reg(31 downto 0) when count_s = "00" else
            h_reg(63 downto 32) when count_s = "01" else

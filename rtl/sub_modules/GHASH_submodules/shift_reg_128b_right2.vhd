@@ -2,6 +2,10 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- takes a 128 bits input, and delivers the 2 LSbits per clock cycles by shifting it
+-- ============================================================================
+
 entity shift_reg_128b_right2 is
   port (
     input  : in    std_logic_vector(127 downto 0);

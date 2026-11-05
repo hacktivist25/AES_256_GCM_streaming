@@ -2,7 +2,13 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- takes a 32 bits "column" of a state in input and returns the multiplication
+-- of this column with the mixColumns matrix defined in NIST.FIPS.197 AES
+-- specification section 5.1.3
+
 -- state column is presented as (MSB) A0, A1, A2, A3 (LSB)
+-- ============================================================================
 
 entity mixcolumns is
   port (

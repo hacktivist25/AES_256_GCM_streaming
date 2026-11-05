@@ -2,6 +2,14 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- uses 1 BRAM (with 2 8bits output)
+-- takes the state in input (128 bits) and returns sbox(state)
+
+-- Latency : 8 cycles
+-- Initiation Interval = 8 cycles
+-- ============================================================================
+
 library unisim;
   use unisim.vcomponents.all;
 

@@ -1,9 +1,12 @@
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
-  use work.utils_pkg.all;
+  use work.utils_pkg.all; -- contains a function "clog2" (ceil(log2(number))
 
--- state column is presented as (MSB) A0, A1, A2, A3 (LSB)
+-- ============================================================================
+-- tunable counter that emits a "valid" signal when it reaches maximum limit
+-- loop again
+-- ============================================================================
 
 entity counter is
   generic (
@@ -43,7 +46,7 @@ begin
 
   end process;
 
-  valid <= '1' when count_s = 3 else
+  valid <= '1' when count_s = limit else
            '0';
   count <= std_logic_vector(to_unsigned(count_s, clog2(limit)));
 

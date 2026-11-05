@@ -3,6 +3,14 @@ library ieee;
   use ieee.numeric_std.all;
   use work.utils_pkg.all;
 
+-- ============================================================================
+-- 4 32bits registers containing each 32 bits of a power of H
+-- G_HASH requires H to the powers 1 to 8
+--
+-- save 32 bits of H when load is settled, on the registers pointed by counter
+-- output is the 32 bits registered in bank pointed by counter
+-- ============================================================================
+
 entity h_power_bank is
   generic (
     n : natural := 3

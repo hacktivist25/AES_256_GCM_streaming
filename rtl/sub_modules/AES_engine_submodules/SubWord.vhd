@@ -2,7 +2,11 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- takes a 4-byte "column", return sbox(column)
+
 -- state column is presented as (MSB) A0, A1, A2, A3 (LSB)
+-- ============================================================================
 
 entity subword is
   port (

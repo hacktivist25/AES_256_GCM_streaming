@@ -2,6 +2,11 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- BRAM 18Kb containing "sbox and invsbox" (used to perform subbyte operation)
+-- do not use UNISIM library
+-- ============================================================================
+
 entity bram_18_true_dual_port_no_inference is
   port (
     addra : in    std_logic_vector(10 downto 0);

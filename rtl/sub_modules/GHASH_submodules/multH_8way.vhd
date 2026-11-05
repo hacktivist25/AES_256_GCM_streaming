@@ -2,6 +2,15 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+-- ============================================================================
+-- 8 steps of a 128 bits multiplication in GF(2 power 128)
+-- multiplication of h_i with v_state_in
+
+-- requires 16 of this block (in serial) to perform a full 128 bits multiplication
+
+-- old signals name, but replacing thoses isn't necessary, see multH32
+-- ============================================================================
+
 entity multh_8way is
   port (
     deformed_contribution_input  : in    std_logic_vector(127 downto 0);
