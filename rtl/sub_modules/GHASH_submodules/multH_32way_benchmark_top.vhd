@@ -53,11 +53,11 @@ begin
 
   benchmark : component multh_32way
     port map (
-      deformed_contribution_input  => v_state_input_reg,
-      current_sum_input            => z_acc_input_reg,
-      h_i                          => h_i_bench,
-      deformed_contribution_output => v_state_output_next,
-      current_sum_output           => z_acc_output_next
+      v_state_in  => v_state_input_reg,
+      z_acc_in    => z_acc_input_reg,
+      h_i         => h_i_bench,
+      v_state_out => v_state_output_next,
+      z_acc_out   => z_acc_output_next
     );
 
   process (clk, rst) is

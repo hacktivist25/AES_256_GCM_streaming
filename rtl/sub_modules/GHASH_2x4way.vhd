@@ -45,8 +45,7 @@ architecture behavior of ghash_2x4way is
 
   type delayers_registers_t is array (0 to 2) of std_logic;
 
-  signal valid_a_delay_reg,   valid_b_delay_reg : delayers_registers_t;
-  signal valid_tag                              : std_logic;
+  signal valid_delay_reg : delayers_registers_t;
 
   signal final_block_delay_reg : delayers_registers_t;
 
@@ -118,12 +117,14 @@ architecture behavior of ghash_2x4way is
   type hpow_counter_s_t is array (0 to 3) of std_logic_vector(1 downto 0);
 
   signal counter_s : hpow_counter_s_t;
+  
+  signal end_frame : std_logic;
 
 begin
 
-  valid_a_s <= valid_a_reg when (counter = "11" or final_block = '1') else
+  valid_a_s <= valid_a_reg when end_frame = '1' else
                valid_a;
-  valid_b_s <= valid_b_reg when (counter = "11" or final_block = '1') else
+  valid_b_s <= valid_b_reg when end_frame = '1' else
                valid_b;
 
   enable_hpow_a <= load_a and valid_s;
@@ -138,16 +139,16 @@ begin
                   counter;
 
   multh_v_state_s_a(0) <= multh_initial_z_acc when valid_a_s = '0' else
-                          stock_a_reg when (counter = "11" or final_block = '1') and swap_reg = '1' else
-                          stock_a_reg xor prev_ad when (counter = "11" or final_block = '1') and swap_reg = '0' else
+                          stock_a_reg when end_frame = '1' and swap_reg = '1' else
+                          stock_a_reg xor prev_ad when end_frame = '1' and swap_reg = '0' else
                           ci_a;
   multh_v_state_s_a(2) <= multh_v_state_reg_a(0);
   multh_v_state_s_a(4) <= multh_v_state_reg_a(1);
   multh_v_state_s_a(6) <= multh_v_state_reg_a(2);
 
   multh_v_state_s_b(0) <= multh_initial_z_acc when valid_b_s = '0' else
-                          stock_b_reg when (counter = "11" or final_block = '1') and swap_reg = '0' else
-                          stock_b_reg xor prev_ad when (counter = "11" or final_block = '1') and swap_reg = '1' else
+                          stock_b_reg when end_frame = '1' and swap_reg = '0' else
+                          stock_b_reg xor prev_ad when end_frame = '1' and swap_reg = '1' else
                           ci_b;
   multh_v_state_s_b(2) <= multh_v_state_reg_b(0);
   multh_v_state_s_b(4) <= multh_v_state_reg_b(1);
@@ -216,8 +217,8 @@ begin
       );
 
   end generate module_generation;
-
-  valid_tag <= valid_a_delay_reg(2) or valid_b_delay_reg(2);
+  
+  end_frame <= '1' when (counter = "11" or final_block = '1') else '0';
 
   process (clk, rst) is
   begin
@@ -236,8 +237,7 @@ begin
         multh_v_state_reg_b(i)   <= (others => '0');
         multh_z_acc_reg_a(i)     <= (others => '0');
         multh_z_acc_reg_b(i)     <= (others => '0');
-        valid_a_delay_reg(i)     <= '0';
-        valid_b_delay_reg(i)     <= '0';
+        valid_delay_reg(i)     <= '0';
         final_block_delay_reg(i) <= '0';
         counter_delay_reg(i)     <= (others => '0');
 
@@ -248,13 +248,9 @@ begin
       counter_delay_reg(1) <= counter_delay_reg(0);
       counter_delay_reg(2) <= counter_delay_reg(1);
 
-      valid_a_delay_reg(0) <= valid_a_s;
-      valid_a_delay_reg(1) <= valid_a_delay_reg(0);
-      valid_a_delay_reg(2) <= valid_a_delay_reg(1);
-
-      valid_b_delay_reg(0) <= valid_b_s;
-      valid_b_delay_reg(1) <= valid_b_delay_reg(0);
-      valid_b_delay_reg(2) <= valid_b_delay_reg(1);
+      valid_delay_reg(0) <= valid_a_s OR valid_b_s;
+      valid_delay_reg(1) <= valid_delay_reg(0);
+      valid_delay_reg(2) <= valid_delay_reg(1);
 
       final_block_delay_reg(0) <= final_block;
       final_block_delay_reg(1) <= final_block_delay_reg(0);
@@ -262,7 +258,7 @@ begin
 
       swap_reg <= swap;
 
-      if (counter = "11" or final_block = '1') then
+      if end_frame = '1' then
         valid_a_reg <= valid_a;
         valid_b_reg <= valid_b;
       else
@@ -287,7 +283,7 @@ begin
 
       end loop;
 
-      if (valid_tag = '1') then
+      if (valid_delay_reg(2) = '1') then
         if (counter_delay_reg(2) = "11" or final_block_delay_reg(2) = '1') then
           tag_reg <= (others => '0');
         else
@@ -301,7 +297,7 @@ begin
   end process;
 
   new_ad   <= multh_z_acc_s_a(7) xor multh_z_acc_s_b(7) xor tag_reg;
-  valid_ad <= '1' when (counter_delay_reg(2) = "11" and valid_tag = '1') or final_block_delay_reg(2) = '1' else
+  valid_ad <= '1' when (counter_delay_reg(2) = "11" and valid_delay_reg(2) = '1') or final_block_delay_reg(2) = '1' else
               '0';
 
 end architecture behavior;
